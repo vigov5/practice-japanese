@@ -1,4 +1,4 @@
-match2ja-game
+practice-japanese
 =============
 
-Simple match two game with japanese words
+Site to practice japanese through sentences
