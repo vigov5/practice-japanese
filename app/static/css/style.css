@@ -2,3 +2,7 @@ body {
   padding-top: 70px;
   padding-bottom: 40px;
 }
+.ja-text {
+	font-family: "Helvetica Neue","Helvetica","Arial","Kai","KaiTi", sans-serif;
+	font-size: 32px;
+}

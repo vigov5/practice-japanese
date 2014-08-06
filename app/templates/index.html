@@ -2,7 +2,11 @@
 {% block content %}
 <div class="row clearfix">
   <div class="col-md-12 column">
-    Hello World
+    <div class="ja-text">
+	{% for part in st %}
+		{{ part }}
+    {% endfor %}
+    </div>
   </div>
 </div>
 {% endblock %}
