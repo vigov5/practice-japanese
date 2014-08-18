@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row clearfix">
+	<div class="col-md-12 column">
+		<div id="sentence">
+		</div>
+	</div>
+</div>
+<hr>
+<div class="row clearfix">
+  <div class="col-md-12 column">
+  	<div id="offboard">
+	{% for id, token in data.items() %}
+    <div class="btn btn-default btn-large ja-text token" id="{{ id }}">
+		{{ token.decode('utf-8') }}
+    </div>
+    {% endfor %}
+	</div>
+  </div>
+</div>
+<br>
+<div class="row clearfix">
+  <div class="col-md-12 column">
+  	<div id="check" class="btn btn-primary btn-large">
+  		Check
+	</div>
+	<a href="{{ url_for('scrambler') }}" id="next" class="btn btn-success btn-large">
+  		Next sentence →
+	<a>
+  </div>
+</div>
+<div class="row clearfix">
+  <div class="col-md-12 column check-part">
+	<div class="btn btn-large" id="correct-mark">
+		<span class="glyphicon glyphicon-ok green-color"></span>
+	</div>
+	<div class="btn btn-large" id="bad-mark">
+		<span class="glyphicon glyphicon-remove red-color"></span>
+	</div>
+  </div>
+</div>
+
+<script type="text/javascript">
+var o = "";
+var good = "1234";
+var done = false;
+$(document).ready(function() {
+	$('.token').each(function(index, el) {
+		$(el).click(function(event) {
+			if (done) return;
+			$('#correct-mark').hide();
+			$('#bad-mark').hide();
+			var target = $(event.target);
+			console.log(o);
+			if (target.parent()[0] == $('#sentence')[0]) {
+				$('#offboard').append(el);
+				o = o.replace(el.id, "");
+				console.log(o);
+			} else {
+				$('#sentence').append(el);
+				o += el.id;
+				console.log(o);
+			}
+		});
+	});
+	$('#check').click(function(event) {
+		if (o == good) {
+			done = true;
+			$('#correct-mark').show();
+			$('#next').show();
+			$('#bad-mark').hide();
+		} else {
+			$('#bad-mark').show();
+			$('#correct-mark').hide();
+		}
+	});
+	$('#correct-mark').hide();
+	$('#bad-mark').hide();
+	$('#next').hide();
+});
+</script>
+{% endblock %}

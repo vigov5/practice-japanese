@@ -31,6 +31,16 @@ def index():
     print '--'.join(list_of_tokens).encode('utf-8')
     return render_template('index.html', st=st)
 
+@app.route('/scrambler')
+def scrambler():
+    data = {
+        1: '一日たりとも', 
+        2: '我々は',
+        3: '水なしには',
+        4: 'いきられない'
+    }
+    return render_template('scrambler.html', data=data)
+
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template('404.html'), 404

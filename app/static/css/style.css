@@ -6,3 +6,18 @@ body {
 	font-family: "Helvetica Neue","Helvetica","Arial","Kai","KaiTi", sans-serif;
 	font-size: 32px;
 }
+#sentence, #offboard {
+	min-height: 60px;
+}
+.glyphicon {
+	font-size: 5em;
+}
+.red-color {
+	color: rgb(247, 132, 106);
+}
+.green-color {
+	color: rgb(201, 234, 93);
+}
+.check-part {
+	min-height: 50px;
+}
