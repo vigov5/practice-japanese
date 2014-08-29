@@ -1,6 +1,12 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="row clearfix">
+  <div class="col-md-12 column">
+  	Click to rearrange following parts to create a correct sentence:
+  </div>
+</div>
+<br>
+<div class="row clearfix">
 	<div class="col-md-12 column">
 		<div id="sentence">
 		</div>
@@ -11,7 +17,7 @@
   <div class="col-md-12 column">
   	<div id="offboard">
 	{% for id, token in data.items() %}
-    <div class="btn btn-default btn-large ja-text token" id="{{ id }}">
+    <div class="btn btn-default btn-large ja-text token" id="t{{ id }}k">
 		{{ token.decode('utf-8') }}
     </div>
     {% endfor %}
@@ -21,12 +27,23 @@
 <br>
 <div class="row clearfix">
   <div class="col-md-12 column">
+  	<span id="ans" class="text-success"></span><br>
+  	<span id="meaning-en" class="text-primary"></span><br>
+  </div>
+</div>
+<br>
+<div class="row clearfix">
+  <div class="col-md-12 column">
+    5 incorrect guesses will reveal "Show answer" button.<br>
   	<div id="check" class="btn btn-primary btn-large">
   		Check
 	</div>
+	<div id="show-ans" class="btn btn-danger btn-large">
+  		Show answer
+	</div>
 	<a href="{{ url_for('scrambler') }}" id="next" class="btn btn-success btn-large">
   		Next sentence →
-	<a>
+	</a>
   </div>
 </div>
 <div class="row clearfix">
@@ -42,8 +59,20 @@
 
 <script type="text/javascript">
 var o = "";
-var good = "1234";
+var good = "{{ good }}";
 var done = false;
+var fail_count = 0;
+var ans = "{{ ans }}";
+var meaning_en = "{{ meaning_en }}";
+
+function utf8_to_b64( str ) {
+  return window.btoa(unescape(encodeURIComponent( str )));
+}
+
+function b64_to_utf8( str ) {
+  return decodeURIComponent(escape(window.atob( str )));
+}
+
 $(document).ready(function() {
 	$('.token').each(function(index, el) {
 		$(el).click(function(event) {
@@ -51,29 +80,45 @@ $(document).ready(function() {
 			$('#correct-mark').hide();
 			$('#bad-mark').hide();
 			var target = $(event.target);
-			console.log(o);
 			if (target.parent()[0] == $('#sentence')[0]) {
 				$('#offboard').append(el);
 				o = o.replace(el.id, "");
-				console.log(o);
 			} else {
 				$('#sentence').append(el);
 				o += el.id;
-				console.log(o);
 			}
 		});
 	});
+	$('#show-ans').click(function(event) {
+		if (fail_count >= 5) {
+			if (!done) {
+				done = true;
+				$('#ans').text(b64_to_utf8(ans));
+				$('#meaning-en').text(b64_to_utf8(meaning_en));
+				$('#show-ans').hide();
+				$('#next').show();
+			}
+		}
+	});
 	$('#check').click(function(event) {
-		if (o == good) {
+		if (o == b64_to_utf8(good)) {
 			done = true;
 			$('#correct-mark').show();
 			$('#next').show();
+			$('#ans').text(b64_to_utf8(ans));
+			$('#meaning-en').text(b64_to_utf8(meaning_en));
+			$('#show-ans').hide();
 			$('#bad-mark').hide();
 		} else {
+			fail_count += 1;
+			if (fail_count >= 5) {
+				$('#show-ans').show();
+			}
 			$('#bad-mark').show();
 			$('#correct-mark').hide();
 		}
 	});
+	$('#show-ans').hide();
 	$('#correct-mark').hide();
 	$('#bad-mark').hide();
 	$('#next').hide();

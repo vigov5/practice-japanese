@@ -1,45 +1,39 @@
 # -*- coding: utf-8 -*-
 
 from flask import render_template
-from app import app
+from app import app, db, lm
+from models import Sentence
 from jNlp.jTokenize import jTokenize
+from jCustom import jStructure
+import base64
+import random
 
 @app.route('/')
 @app.route('/index')
 def index():
-    targets = [u"つまり"]
-    input_sentence = u'私は彼を５日前、つまりこの前の金曜日に駅で見かけた'
-    list_of_tokens = jTokenize(input_sentence)
-    print list_of_tokens
     st = []
-    txt = u''
-    for tk in list_of_tokens:
-        print tk
-        if tk not in targets:
-            txt += tk
-        else:
-            print txt
-            st.append(txt)
-            st.append(u"＿＿")
-            st.append(u"＿＿")
-            st.append(u"＿★＿")
-            st.append(u"＿＿")
-            txt = u''
-    print txt
-    if txt:
-        st.append(txt)
-    print '--'.join(list_of_tokens).encode('utf-8')
     return render_template('index.html', st=st)
 
 @app.route('/scrambler')
 def scrambler():
-    data = {
-        1: '一日たりとも', 
-        2: '我々は',
-        3: '水なしには',
-        4: 'いきられない'
-    }
-    return render_template('scrambler.html', data=data)
+    id = random.randint(1, 10000)
+    s = Sentence.query.get(id)
+    tokens = jStructure(s.content)
+    data = {}
+    good = ''
+    ans = ''
+    indexs = range(len(tokens))
+    random.shuffle(indexs)
+    for i, tok in enumerate(tokens):
+        data[indexs[i]] = tok
+        ans += tok
+        good += "t%dk" % indexs[i]
+    data = dict(zip(data.keys(), data.values()))
+    return render_template('scrambler.html',
+        data=data, good=base64.b64encode(good),
+        ans=base64.b64encode(ans),
+        meaning_en=base64.b64encode(s.meaning_en)
+    )
 
 @app.errorhandler(404)
 def page_not_found(e):
